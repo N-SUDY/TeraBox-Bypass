@@ -9,7 +9,7 @@ from urllib.parse import quote, unquote
 # sample_url = "https://teraboxapp.com/s/13FlMJT4cytJbA00IBUWX0w" # file with directories
 # sample_url = "https://terabox.app/s/16oyv6pH-e97aYGPrLpbTTQ" # only file
 
-terabox_url = terabox_url = input("Terabox url: ") if len(argv) < 2 else argv[1]
+terabox_url = input("Terabox url: ") if len(argv) < 2 else argv[1]
 
 json_data_url = "https://www.4funbox.com/share/list?jsToken={jsToken}&shorturl={key}"
 cookies = {"ndus": "YbDgQCEteHui0Bx8sPAmBS3hSB4K79edBrj6PrJq"}
