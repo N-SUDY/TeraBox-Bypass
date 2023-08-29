@@ -1,12 +1,14 @@
-import requests
-from bs4 import BeautifulSoup
-from urllib.parse import quote, unquote
-import humanize
 import re
+import requests
+from sys import argv
+from bs4 import BeautifulSoup
+from humanize import naturalsize
+from urllib.parse import quote, unquote
 
 
-terabox_url = "https://teraboxapp.com/s/13FlMJT4cytJbA00IBUWX0w" # file with directories
+# terabox_url = "https://teraboxapp.com/s/13FlMJT4cytJbA00IBUWX0w" # file with directories
 # terabox_url = "https://terabox.app/s/16oyv6pH-e97aYGPrLpbTTQ" # only file
+
 json_data_url = "https://www.4funbox.com/share/list?jsToken={jsToken}&shorturl={key}"
 cookies = {"ndus": "YbDgQCEteHui0Bx8sPAmBS3hSB4K79edBrj6PrJq"}
 jsToken = None
@@ -39,15 +41,16 @@ def bypass_directory_logic(jsToken, key, link, cookies, depth=0):
                 
                 print(f"Path: {path[0]}")
                 print(f"Title: {title}")
-                print(f"Size: {humanize.naturalsize(size)}")
+                print(f"Size: {naturalsize(size)}")
                 print(f"Dlink: {dlink}\n")
                 
             if "path" in item:
-                sub_link = f"{json_data_url.format(jsToken=jsToken, key=key)}&dir={quote(item['path']).replace('/', '%2F')}"
+                _path = quote(item["path"]).replace("/", "%2F")
+                sub_link = f"{json_data_url.format(jsToken=jsToken, key=key)}&dir={_path}"
                 bypass_directory_logic(jsToken, key, sub_link, cookies, depth + 1)
 
 
-process_terabox(terabox_url)
+process_terabox(argv[1])
 
 base = json_data_url.format(jsToken=jsToken, key=key)
 res = requests.get(f"{base}&root=1", cookies=cookies)
@@ -58,9 +61,9 @@ try:
     dlink = meta['dlink']
     
     print(f"Title: {title}")
-    print(f"Size: {humanize.naturalsize(size)}")
+    print(f"Size: {naturalsize(size)}")
     print(f"Dlink: {dlink}")
 except KeyError:
-    _path = res.json()["list"][0]["path"]
-    link = f'{json_data_url.format(jsToken=jsToken, key=key)}&dir={quote(_path).replace("/", "%2F")}'
+    _path = quote(res.json()["list"][0]["path"]).replace("/", "%2F")
+    link = f'{json_data_url.format(jsToken=jsToken, key=key)}&dir={_path}'
     bypass_directory_logic(jsToken, key, link, cookies)
